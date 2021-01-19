@@ -1,109 +1,217 @@
 #include "Generator.h"
 
-sf::Image Generator::GenerateDungeon(int iterations)
+sf::Image Generator::GenerateDungeon(int iterations, int type)
 {
 	pixels.create(xSize, ySize, sf::Color::Black);
 
 	//Grid map = new Grid(xSize, ySize);
 	Grid *map = new Grid(xSize, ySize);
 	//int *rd = map->GetRandomPoint();
-	std::random_device random;
-	std::mt19937 gen(random());
-	std::uniform_int_distribution<> w(0, map->Width), h(0, map->Height);
-	int randPoint[2];
-	randPoint[0] = w(gen);
-	std::cout << "Rand point 0 = " << randPoint[0] << std::endl;
-	randPoint[1] = h(gen);
-	std::cout << "Rand point 1 = " << randPoint[1] << std::endl;
-	std::cout << "Calculated random point as: " << randPoint[0] << ", " << randPoint[1] << std::endl;
-	std::cout << "here" << std::endl;
-	//std::cout << rd[0] << ", " << rd[1] << std::endl;
-	int point[2];
-	point[0] = randPoint[0];
-	point[1] = randPoint[1];
-    std::cout << point[0] << ", " << point[1] << std::endl;
 
-	std::uniform_int_distribution<> dir(0, 3);
-
-	for (int i = 0; i < iterations; i++)
+	if (type == 0)
 	{
-		//std::cout << "here" << std::endl;
-		int direction = dir(gen);
-		switch (direction)
+		std::random_device random;
+		std::mt19937 gen(random());
+		std::uniform_int_distribution<> w(0, map->Width), h(0, map->Height);
+		int randPoint[2];
+		randPoint[0] = w(gen);
+		std::cout << "Rand point 0 = " << randPoint[0] << std::endl;
+		randPoint[1] = h(gen);
+		std::cout << "Rand point 1 = " << randPoint[1] << std::endl;
+		std::cout << "Calculated random point as: " << randPoint[0] << ", " << randPoint[1] << std::endl;
+		std::cout << "here" << std::endl;
+		//std::cout << rd[0] << ", " << rd[1] << std::endl;
+		int point[2];
+		point[0] = randPoint[0];
+		point[1] = randPoint[1];
+		std::cout << point[0] << ", " << point[1] << std::endl;
+
+		std::uniform_int_distribution<> dir(0, 3);
+
+		for (int i = 0; i < iterations; i++)
 		{
-		//North
-		case 0:
-			//std::cout << "North" << endl;
-			if (point[1] != 0)
+			//std::cout << "here" << std::endl;
+			int direction = dir(gen);
+			switch (direction)
 			{
-				//std::cout << point[0] << ", " << point[1] << endl;
-				//map->FillPoint(point[0], point[1] - 1);
-				unsigned int point0 = point[0];
-				//std::cout << point0 << std::endl;
-				pixels.setPixel(point[0], point[1] - 1, sf::Color::White);
-				point[1] -= 1;
-			}
-			else
-			{
-				i--;
+				//North
+			case 0:
+				//std::cout << "North" << endl;
+				if (point[1] != 0)
+				{
+					//std::cout << point[0] << ", " << point[1] << endl;
+					//map->FillPoint(point[0], point[1] - 1);
+					unsigned int point0 = point[0];
+					//std::cout << point0 << std::endl;
+					pixels.setPixel(point[0], point[1] - 1, sf::Color::White);
+					point[1] -= 1;
+				}
+				else
+				{
+					i--;
+					break;
+				}
+				break;
+
+				//East	
+			case 1:
+				//	std::cout << "East" << endl;
+				if (point[0] != 0)
+				{
+					//	std::cout << point[0] << ", " << point[1] << endl;
+						//map->FillPoint(point[0] - 1, point[1]);
+					pixels.setPixel(point[0] - 1, point[1], sf::Color::White);
+					point[0] -= 1;
+				}
+				else
+				{
+					i--;
+					break;
+				}
+				break;
+				//South
+			case 2:
+				//std::cout << "South" << endl;
+				if (point[1] != map->Height)
+				{
+					//std::cout << point[0] << ", " << point[1] << endl;
+					//map->FillPoint(point[0], point[1] + 1);
+					pixels.setPixel(point[0], point[1] + 1, sf::Color::White);
+					point[1] += 1;
+				}
+				else
+				{
+					i--;
+					break;
+				}
+				break;
+				//West
+			case 3:
+				//std::cout << "West" << endl;
+				if (point[0] != map->Width)
+				{
+					//std::cout << point[0] << ", " << point[1] << endl;
+					//map->FillPoint(point[0] + 1, point[1]);
+					pixels.setPixel(point[0] + 1, point[1], sf::Color::White);
+					point[0] += 1;
+				}
+				else
+				{
+					i--;
+					break;
+				}
 				break;
 			}
-			break;
-			
-		//East	
-		case 1:
-		//	std::cout << "East" << endl;
-			if (point[0] != 0)
-			{
-			//	std::cout << point[0] << ", " << point[1] << endl;
-				//map->FillPoint(point[0] - 1, point[1]);
-				pixels.setPixel(point[0] - 1, point[1], sf::Color::White);
-				point[0] -= 1;
-			}
-			else
-			{
-				i--;
-				break;
-			}
-			break;
-		//South
-		case 2:
-		//std::cout << "South" << endl;
-		if (point[1] != map->Height)
-		{
-			//std::cout << point[0] << ", " << point[1] << endl;
-			//map->FillPoint(point[0], point[1] + 1);
-			pixels.setPixel(point[0], point[1] + 1, sf::Color::White);
-			point[1] += 1;
 		}
-		else
-		{
-			i--;
-			break;
-		}
-		break;
-	//West
-	case 3:
-		//std::cout << "West" << endl;
-		if (point[0] != map->Width)
-		{
-			//std::cout << point[0] << ", " << point[1] << endl;
-			//map->FillPoint(point[0] + 1, point[1]);
-		pixels.setPixel(point[0] + 1, point[1], sf::Color::White);
-			point[0] += 1;
-		}
-		else
-		{
-			i--;
-			break;
-		}
-		break;
 	}
-}
+	else
+	{
+		float aliveChance = 0.42f;
+		int starvationLimit = 0;
+		int overpopLimit = 0;
+		int birthNumber = 4;
+		int iter = 2;
+
+		int deathLimit = 3;
+
+		map->InitRandom(aliveChance);
+
+		//Grid* newMap = new Grid(xSize, ySize);
+
+		std::cout << "map test Val = " << map->GetTestVal() << std::endl;
+		for (int i = 0; i < iter; i++)
+		{
+			//std::cout << "Doing iteration!" << std::endl;
+			//std::cout << "map test Val = " << map->GetTestVal() << std::endl;
+			map = CAIteration(map, deathLimit, birthNumber);
+		}
+		std::cout << "map test Val = " << map->GetTestVal() << std::endl;
+		for (int i = 0; i < xSize; i++)
+		{
+			for (int y = 0; y < ySize; y++)
+			{
+				if (map->GetPoint(i, y))
+				{
+					//pixels.setPixel(i, y, sf::Color::White);
+				}
+			}
+		}
+
+	}
 
 	return pixels;
 
 //map->Print();
+}
+
+Grid* Generator::CAIteration(Grid* oldMap, int deathLimit, int birthNumber)
+{
+	Grid* newMap = new Grid(xSize, ySize);
+	newMap->SetTestVal(10);
+	for (int x = 0; x < xSize; x++)
+	{
+		for (int y = 0; y < ySize; y++)
+		{
+			int neighbours = countAliveNeighbours(oldMap, x, y);
+			//std::cout << "neighbours = " << neighbours << std::endl;
+			//if (x == 10)
+			//{
+			////	std::cout << "Point at x = " << x << ", Alive = " << oldMap->GetPoint(x, y);
+			//}
+
+			if (oldMap->GetPoint(x, y))
+			{
+				if (neighbours < deathLimit)
+				{
+					newMap->EmptyPoint(x, y);
+					pixels.setPixel(x, y, sf::Color::Black);
+				}
+				else
+				{
+					newMap->FillPoint(x, y);
+					pixels.setPixel(x, y, sf::Color::White);
+				}
+			}
+			else
+			{
+				if (neighbours > birthNumber)
+				{
+					newMap->FillPoint(x, y);
+					pixels.setPixel(x, y, sf::Color::White);
+				}
+				else
+				{
+					newMap->EmptyPoint(x, y);
+					pixels.setPixel(x, y, sf::Color::Black);
+				}
+			}
+		}
+	}
+
+	return newMap;
+}
+
+ int Generator::countAliveNeighbours(Grid* map, int x, int y) {
+	int count = 0;
+	for (int i = -1; i < 2; i++) {
+		for (int j = -1; j < 2; j++) {
+			int neighbour_x = x + i;
+			int neighbour_y = y + j;
+			//If we're looking at the middle point
+			if (i == 0 && j == 0) {
+				//Do nothing, we don't want to add ourselves in!
+			}
+			//In case the index we're looking at it off the edge of the map
+			else if (neighbour_x < 0 || neighbour_y < 0 || neighbour_x >= xSize || neighbour_y >= ySize) {
+				count = count + 1;
+			}
+			//Otherwise, a normal check of the neighbour
+			else if (map->GetPoint(neighbour_x, neighbour_y)) {
+				count = count + 1;
+			}
+		}
+	}
+	return count;
 }
 
 sf::Image Generator::GenerateBSP()

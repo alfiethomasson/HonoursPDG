@@ -8,10 +8,10 @@ Grid::Grid(int width, int height)
 	Height = height - 1;
 	for (int i = 0; i < height; i++)
 	{
-		mapVector.push_back(std::vector<char>());
+		mapVector.push_back(std::vector<bool>());
 		for (int w = 0; w < width; w++)
 		{
-			mapVector[i].push_back('O');
+			mapVector[i].push_back(false);
 		}
 	}
 }
@@ -32,12 +32,12 @@ int* Grid::GetRandomPoint()
 
 void Grid::EmptyPoint(int x, int y)
 {
-	mapVector[x][y] = 'O';
+	mapVector[x][y] = false;
 }
 
 void Grid::FillPoint(int x, int y)
 {
-	mapVector[x][y] = ' ';
+	mapVector[x][y] = true;
 }
 
 void Grid::Print()
@@ -46,9 +46,44 @@ void Grid::Print()
 	{
 		for (int y = 0; y < Width + 1; y++)
 		{
-			std::cout << mapVector[i][y];
+			//std::cout << mapVector[i][y];
 		}
 		std::cout << std::endl;	
 	}
 	std::cout << std::endl;
+}
+
+bool Grid::GetPoint(int x, int y)
+{
+	return mapVector[x][y];
+}
+
+void Grid::InitRandom(float cutoff)
+{
+	for (int x = 0; x < Width; x++)
+	{
+		for (int y = 0; y < Height; y++)
+		{
+			if (((double)rand() / RAND_MAX) < cutoff)
+			{
+				std::cout << "Filling as true" << std::endl;
+				mapVector[x][y] = true;
+			}
+			else
+			{
+				std::cout << "Filling as false" << std::endl;
+				mapVector[x][y] = false;
+			}
+		}
+	}
+}
+
+void Grid::SetTestVal(int val)
+{
+	testVal = val;
+}
+
+int Grid::GetTestVal()
+{
+	return testVal;
 }

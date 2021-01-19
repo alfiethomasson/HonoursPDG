@@ -27,7 +27,9 @@ public:
 	Generator(sf::String methodType, int x, int y) { xSize = x, ySize = y, method = methodType;};
 	virtual ~Generator() = default;
 
-	virtual sf::Image GenerateDungeon(int iterations);
+	virtual sf::Image GenerateDungeon(int iterations, int type);
+	Grid* CAIteration(Grid* oldMap, int deathNum, int birthNum);
+	int countAliveNeighbours(Grid* map, int x, int y);
 	virtual sf::Image GenerateBSP();
 	virtual void Split(Node* node, int depth, int maxDepth);
 	sf::Image GenerateImageBSP();

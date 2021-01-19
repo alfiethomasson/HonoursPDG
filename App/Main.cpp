@@ -39,10 +39,10 @@ int main(int argc, char** argv)
 	float curZoom = 1.f;
 
 	sf::String methodName = "Test";
-	Generator *gen = new Generator(methodName, 1000, 1000);
+	Generator *gen = new Generator(methodName, 50, 50);
 	sf::Image output;
-	output = gen->GenerateDungeon(100);
-	output = gen->GenerateBSP();
+	output = gen->GenerateDungeon(100, 1);
+	//output = gen->GenerateBSP();
 	sf::Texture imgText;
 	imgText.loadFromImage(output);
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 		{
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
 			{
-				output = gen->GenerateDungeon(1000000);
+				output = gen->GenerateDungeon(1000000, 1);
 				imgText.loadFromImage(output);
 				dungeon.setTexture(imgText);
 

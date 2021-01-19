@@ -10,6 +10,11 @@ public:
 	int* GetRandomPoint();
 	void EmptyPoint(int x, int y);
 	void FillPoint(int x, int y);
+	void InitRandom(float randValue);
+	bool GetPoint(int x, int y);
+
+	void SetTestVal(int val);
+	int GetTestVal();
 
 	void Print();
 
@@ -17,5 +22,6 @@ public:
 	int Height;
 
 protected:
-	std::vector<std::vector<char>> mapVector;
+	std::vector<std::vector<bool>> mapVector;
+	int testVal;
 };
