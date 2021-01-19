@@ -16,14 +16,16 @@ Grid::Grid(int width, int height)
 	}
 }
 
-int * Grid::GetRandomPoint()
+int* Grid::GetRandomPoint()
 {
 	std::random_device random;
 	std::mt19937 gen(random());
 	std::uniform_int_distribution<> w(0, Width), h(0, Height);
 	int randPoint[2];
 	randPoint[0] = w(gen);
+	std::cout << "Rand point 0 = " << randPoint[0] << std::endl;
 	randPoint[1] = h(gen);
+	std::cout << "Rand point 1 = " << randPoint[1] << std::endl;
 	std::cout << "Calculated random point as: " << randPoint[0] << ", " << randPoint[1] << std::endl;
 	return randPoint;
 }

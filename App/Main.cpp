@@ -1,98 +1,159 @@
 #include <iostream>
 #include "Grid.h"
+#include "Generator.h"
 #include <random>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
 
 int main(int argc, char** argv)
 {
-	cout << "Hi!  Welcome to the Drunkward Walk simple map creator." << endl;
-	int width = 100	;
-	int height = 100;
-	Grid *map = new Grid(width, height);
-	int *rd = map->GetRandomPoint();
-	//std::cout << point[0] << ", " << point[1] << endl;
-	int point[2];
-	point[0] = rd[0];
-	point[1] = rd[1];
 
-	std::random_device random;
-	std::mt19937 gen(random());
-	std::uniform_int_distribution<> dir(0, 3);
+	bool inMenu = true;
 
-	std::cout << "Beginning drunkard walk" << std::endl;
+	sf::RenderWindow window(sf::VideoMode(800, 600), "Dungeon Generator");
+	//sf::CircleShape shape(100.f);
+	sf::Font font;
+	font.loadFromFile("D:/fonts/ARIALBD.ttf");
+	sf::Text title("Dungeon	Generator", font);
+	sf::Text DrunkardWalkText("Cellular Automata - 1", font);
+	sf::Text BSPText("Binary Space Partitioning - 2", font);
+	title.setCharacterSize(30);
+	DrunkardWalkText.setCharacterSize(30);
+	BSPText.setCharacterSize(30);
+	title.setFillColor(sf::Color::White);
+	DrunkardWalkText.setFillColor(sf::Color::White);
+	BSPText.setFillColor(sf::Color::White);
 
-	for (int i = 0; i < 5000; i++)
+	title.setPosition(200.0f, 0.0f);
+	DrunkardWalkText.setPosition(200.0f, 200.0f);
+	BSPText.setPosition(200.0f, 300.0f);
+
+	bool bspActive = false;
+	bool drunkardwalkActive = false;
+
+	sf::View mainView(sf::FloatRect(0.f, 0.f, 800.f, 600.f));
+
+	window.setView(mainView);
+	float curZoom = 1.f;
+
+	sf::String methodName = "Test";
+	Generator *gen = new Generator(methodName, 1000, 1000);
+	sf::Image output;
+	output = gen->GenerateDungeon(100);
+	output = gen->GenerateBSP();
+	sf::Texture imgText;
+	imgText.loadFromImage(output);
+
+	sf::Sprite dungeon;
+	dungeon.setTexture(imgText);
+
+	dungeon.setPosition(0, 0);
+
+	while (window.isOpen())
 	{
-		int direction = dir(gen);
-		switch (direction)
+		sf::Event event;
+		while (window.pollEvent(event))
 		{
-		//North
-		case 0:
-			//std::cout << "North" << endl;
-			if (point[1] != 0)
+			if (event.type == sf::Event::Closed)
+				window.close();
+
+			if (event.type == sf::Event::MouseWheelMoved)
 			{
-				//std::cout << point[0] << ", " << point[1] << endl;
-				map->FillPoint(point[0], point[1] - 1);
-				point[1] -= 1;
+				//std::cout << event.mouseWheel.delta << std::endl;
+				int wheelMovement = event.mouseWheel.delta;
+				if (wheelMovement == 1)
+				{
+					mainView.zoom(curZoom - 0.05f);
+				}
+				else
+				{
+					mainView.zoom(curZoom + 0.05f);
+				}
+				window.setView(mainView);
 			}
-			else
-			{
-				i--;
-				break;
-			}
-			break;
-			
-		//East	
-		case 1:
-		//	std::cout << "East" << endl;
-			if (point[0] != 0)
-			{
-			//	std::cout << point[0] << ", " << point[1] << endl;
-				map->FillPoint(point[0] - 1, point[1]);
-				point[0] -= 1;
-			}
-			else
-			{
-				i--;
-				break;
-			}
-			break;
-		//South
-		case 2:
-			//std::cout << "South" << endl;
-			if (point[1] != map->Height)
-			{
-				//std::cout << point[0] << ", " << point[1] << endl;
-				map->FillPoint(point[0], point[1] + 1);
-				point[1] += 1;
-			}
-			else
-			{
-				i--;
-				break;
-			}
-			break;
-		//West
-		case 3:
-			//std::cout << "West" << endl;
-			if (point[0] != map->Width)
-			{
-				//std::cout << point[0] << ", " << point[1] << endl;
-				map->FillPoint(point[0] + 1, point[1]);
-				point[0] += 1;
-			}
-			else
-			{
-				i--;
-				break;
-			}
-			break;
 		}
+
+		if (inMenu)
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+			{
+				output = gen->GenerateDungeon(1000000);
+				imgText.loadFromImage(output);
+				dungeon.setTexture(imgText);
+
+				inMenu = false;
+				drunkardwalkActive = true;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+			{
+				output = gen->GenerateBSP();
+				imgText.loadFromImage(output);
+				dungeon.setTexture(imgText);
+
+				inMenu = false;
+				bspActive = true;
+			}
+			window.clear();
+
+			window.draw(title);
+			window.draw(DrunkardWalkText);
+			window.draw(BSPText);
+
+		}
+		else
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			{
+				mainView.move(-1.f * (curZoom * 0.1f), 0.f);
+				window.setView(mainView);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			{
+				mainView.move(1.f * (curZoom * 0.1f), 0.f);
+				window.setView(mainView);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			{
+				mainView.move(0.f, 1.f * (curZoom * 0.1f));
+				window.setView(mainView);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			{
+				mainView.move(0.f, -1.f * (curZoom * 0.1f));
+				window.setView(mainView);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				drunkardwalkActive = false;
+				bspActive = false;
+				inMenu = true;
+			}
+
+			window.clear();
+
+			if (drunkardwalkActive)
+			{
+				window.draw(dungeon);
+			}
+			else if (bspActive)
+			{
+				window.draw(dungeon);
+			}
+		}
+		window.display();
 	}
 
-	map->Print();
-	// Return 0 (OK)
 	return 0;
+}
+
+void DoCA()
+{
+
+}
+
+void DoBSP()
+{
+
 }
