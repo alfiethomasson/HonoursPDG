@@ -1,6 +1,7 @@
 #include "Grid.h"
 #include <random>
 #include <iostream>
+#include <ctime>
 
 Grid::Grid(int width, int height)
 {
@@ -60,6 +61,8 @@ bool Grid::GetPoint(int x, int y)
 
 void Grid::InitRandom(float cutoff)
 {
+	srand(time(NULL));
+
 	for (int x = 0; x < Width; x++)
 	{
 		for (int y = 0; y < Height; y++)
