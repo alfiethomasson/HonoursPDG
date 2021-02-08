@@ -11,7 +11,9 @@ link_directories("${CMAKE_BINARY_DIR}/lib/sfml/lib")
 # add the executable
 file(GLOB_RECURSE SOURCES App/*.cpp App/*.h)
 add_executable(DungeonGenerator ${SOURCES})
-target_include_directories(DungeonGenerator SYSTEM PRIVATE ${SFML})
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+target_include_directories(DungeonGenerator SYSTEM PRIVATE ${SFML} "D:/Github/imgui" "D:/Github/imgui-sfml")
 set(EXECUTABLES ${EXECUTABLES} DungeonGenerator)
 
 foreach (exe ${EXECUTABLES})
@@ -22,5 +24,6 @@ foreach (exe ${EXECUTABLES})
     optimized sfml-window debug sfml-window-d
     optimized sfml-system debug sfml-system-d
     optimized sfml-main
+${OPENGL_LIBRARIES}
 )
 endforeach ()

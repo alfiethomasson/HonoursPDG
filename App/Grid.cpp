@@ -24,10 +24,10 @@ int* Grid::GetRandomPoint()
 	std::uniform_int_distribution<> w(0, Width), h(0, Height);
 	int randPoint[2];
 	randPoint[0] = w(gen);
-	std::cout << "Rand point 0 = " << randPoint[0] << std::endl;
+	//std::cout << "Rand point 0 = " << randPoint[0] << std::endl;
 	randPoint[1] = h(gen);
-	std::cout << "Rand point 1 = " << randPoint[1] << std::endl;
-	std::cout << "Calculated random point as: " << randPoint[0] << ", " << randPoint[1] << std::endl;
+//	std::cout << "Rand point 1 = " << randPoint[1] << std::endl;
+//	std::cout << "Calculated random point as: " << randPoint[0] << ", " << randPoint[1] << std::endl;
 	return randPoint;
 }
 
@@ -49,9 +49,9 @@ void Grid::Print()
 		{
 			//std::cout << mapVector[i][y];
 		}
-		std::cout << std::endl;	
+		//std::cout << std::endl;	
 	}
-	std::cout << std::endl;
+	//std::cout << std::endl;
 }
 
 bool Grid::GetPoint(int x, int y)
@@ -69,12 +69,12 @@ void Grid::InitRandom(float cutoff)
 		{
 			if (((double)rand() / RAND_MAX) < cutoff)
 			{
-				std::cout << "Filling as true" << std::endl;
+				//std::cout << "Filling as true" << std::endl;
 				mapVector[x][y] = true;
 			}
 			else
 			{
-				std::cout << "Filling as false" << std::endl;
+				//std::cout << "Filling as false" << std::endl;
 				mapVector[x][y] = false;
 			}
 		}

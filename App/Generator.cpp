@@ -147,6 +147,7 @@ sf::Image Generator::GenerateDungeon(int caMap[], int iterations, int type)
 
 std::vector<std::vector<int>> Generator::GenerateMapTiles(int x, int y, int AlivePercent, int BirthNum, int iterations, int DeathLimit, int type)
 {
+
 	//pixels.create(xSize, ySize, sf::Color::Black);
 
 	//Grid map = new Grid(xSize, ySize);
@@ -289,42 +290,44 @@ std::vector<std::vector<int>> Generator::GenerateMapTiles(int x, int y, int Aliv
 
 		//Grid* newMap = new Grid(xSize, ySize);
 
-		std::cout << "Size of vector before = " << vecMap.size() << std::endl;
+	//	std::cout << "Size of vector before = " << vecMap.size() << std::endl;
 		for (int i = 0; i < iter; i++)
 		{
 			//std::cout << "Doing iteration!" << std::endl;
 			//std::cout << "map test Val = " << map->GetTestVal() << std::endl;
 			map = CAIteration(map, vecMap, deathLimit, birthNumber, x, y);
 		}
-		std::cout << "map test Val = " << map->GetTestVal() << std::endl;
+		//std::cout << "map test Val = " << map->GetTestVal() << std::endl;
 		for (int i = 0; i < x; i++)
 		{
 			for (int r = 0; r < y; r++)
 			{
 				if (map->GetPoint(i, r))
 				{
-					std::cout << "Trying to make 1" << std::endl;
+				//	std::cout << "Trying to make 1" << std::endl;
 					vecMap[i][r] = 1;
 				}
 			}
 		}
 	}
 
-	std::cout << "map test Val = " << "GOT2HERE!" << std::endl;
+	//std::cout << "map test Val = " << "GOT2HERE!" << std::endl;
 
 	return vecMap;
 }
 
 Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap, int deathLimit, int birthNumber, int xVal, int yVal)
 {
-	std::cout << "Size of vector after = " << tileMap.size() << std::endl;
+	//std::cout << "Size of vector after = " << tileMap.size() << std::endl;
 	Grid* newMap = new Grid(xVal, yVal);
 	newMap->SetTestVal(10);
 	for (int x = 0; x < xVal; x++)
 	{
 		for (int y = 0; y < yVal; y++)
 		{
-			int neighbours = countAliveNeighbours(oldMap, x, y);
+			//std::cout << "Co-ords = " << x << ", " << y << std::endl;
+			int neighbours = countAliveNeighbours(oldMap, x, y, xVal, yVal);
+			//std::cout << "After neighbours " << std::endl;
 			//std::cout << "neighbours = " << neighbours << std::endl;
 			//if (x == 10)
 			//{
@@ -333,6 +336,7 @@ Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap
 
 			if (oldMap->GetPoint(x, y))
 			{
+				//std::cout << "Filled" << std::endl;
 				if (neighbours < deathLimit)
 				{
 					newMap->EmptyPoint(x, y);
@@ -348,6 +352,7 @@ Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap
 			}
 			else
 			{
+			//	std::cout << "Not Filled " << std::endl;
 				if (neighbours > birthNumber)
 				{
 					newMap->FillPoint(x, y);
@@ -367,7 +372,7 @@ Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap
 	return newMap;
 }
 
- int Generator::countAliveNeighbours(Grid* map, int x, int y) {
+ int Generator::countAliveNeighbours(Grid* map, int x, int y, int xVal, int yVal) {
 	int count = 0;
 	for (int i = -1; i < 2; i++) {
 		for (int j = -1; j < 2; j++) {
@@ -378,7 +383,7 @@ Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap
 				//Do nothing, we don't want to add ourselves in!
 			}
 			//In case the index we're looking at it off the edge of the map
-			else if (neighbour_x < 0 || neighbour_y < 0 || neighbour_x >= xSize || neighbour_y >= ySize) {
+			else if (neighbour_x < 0 || neighbour_y < 0 || neighbour_x >= xVal || neighbour_y >= yVal) {
 				count = count + 1;
 			}
 			//Otherwise, a normal check of the neighbour
@@ -390,15 +395,20 @@ Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap
 	return count;
 }
 
- std::vector<std::vector<int>> Generator::GenerateBSP()
+ std::vector<std::vector<int>> Generator::GenerateBSP(int depthMax, int SizeInt, int minHor, int maxHor, int minVer, int maxVer)
 {
-	Grid* map = new Grid(xSize, ySize);
+
+	 std::cout << "X val = " << SizeInt << std::endl;
+	 std::cout << "Y val = " << SizeInt << std::endl;
+
+
+	Grid* map = new Grid(SizeInt, SizeInt);
 	std::vector<std::vector<int>> mapOutput;
-	for (int i = 0; i < 30; i++)
+	for (int i = 0; i < SizeInt; i++)
 	{
 		std::vector<int> row;
 		//row.reserve(32);
-		for (int y = 0; y < 30; y++)
+		for (int y = 0; y < SizeInt; y++)
 		{
 			row.push_back(0);
 		}
@@ -410,20 +420,29 @@ Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap
 
 	Node* root = new Node();
 
+	std::cout << "Min Hor Before = " << minHor << std::endl;
+
+	float minHorMod = (float)minHor / 100;
+	float maxHorMod = (float)maxHor / 100;
+	float minVerMod = (float)minVer / 100;
+	float maxVerMod = (float)maxVer / 100;
+
+	std::cout << "Min Hor = " << minHorMod << std::endl;
+
 	rooms.clear();
 
 	root->row = 0;
 	root->column = 0;
-	root->width = 30;
-	root->height = 30;
+	root->width = SizeInt;
+	root->height = SizeInt;
 
 	int depth = 0;
-	if (depth < 5)
+	if (depth < depthMax)
 	{
-		Split(root, 0, 5);
+		Split(root, 0, depthMax, SizeInt, minHorMod, maxHorMod, minVerMod, maxVerMod);
 	}
 
-	mapOutput = CreateHall(root, mapOutput);
+	//mapOutput = CreateHall(root, mapOutput);
 
 	//sf::Image img = GenerateImageBSP();
 	std::vector<std::vector<int>> returnedMap = GenerateBSPOutput(mapOutput);
@@ -442,8 +461,9 @@ Grid* Generator::CAIteration(Grid* oldMap, std::vector<std::vector<int>> tileMap
 
 }
 
-void Generator::Split(Node* node, int depth, int maxDepth)
+void Generator::Split(Node* node, int depth, int maxDepth, int SizeInt, float minHor, float maxHor, float minVer, float maxVer)
 {
+
 	std::random_device random;
 	std::mt19937 gen(random());
 	std::uniform_int_distribution<int> r(0, 1);
@@ -453,9 +473,9 @@ void Generator::Split(Node* node, int depth, int maxDepth)
 
 	if (r(gen) == 0)
 	{
-		int min = (int)(0.3 * node->height);
-		int max = (int)(0.6 * node->height);
-		std::cout << "Horizontal split" << std::endl;
+		int min = (int)(minVer * node->height);
+		int max = (int)(maxVer * node->height);
+		//std::cout << "Horizontal split" << std::endl;
 		int rowLine = ((rand() % (max - min + 1)) + min);
 		node->A->row = node->row;
 		node->A->column = node->column;
@@ -469,9 +489,9 @@ void Generator::Split(Node* node, int depth, int maxDepth)
 	}
 	else
 	{
-		std::cout << "Vertical split" << std::endl;
-		int min = (int)(0.3 * node->width);
-		int max = (int)(0.6 * node->width);
+		//std::cout << "Vertical split" << std::endl;
+		int min = (int)(minHor * node->width);
+		int max = (int)(maxHor * node->width);
 		int colLine = ((rand() % (max - min + 1)) + min);
 		node->A->row = node->row;
 		node->A->column = node->column;
@@ -485,8 +505,8 @@ node->B->height = node->height;
 	}
 
 	if (depth < maxDepth) {
-		this->Split(node->A, (depth + 1), maxDepth);
-		this->Split(node->B, (depth + 1), maxDepth);
+		this->Split(node->A, (depth + 1), maxDepth, SizeInt, minHor, maxHor, minVer, maxVer);
+		this->Split(node->B, (depth + 1), maxDepth, SizeInt, minHor, maxHor, minVer, maxVer);
 	}
 	else
 	{
@@ -503,7 +523,7 @@ sf::Image Generator::GenerateImageBSP()
 	for (int i = 0; i < rooms.size(); i++)
 	{
 		Node* node = rooms[i];
-		std::cout << "Got a room here: " << i << std::endl;
+		//std::cout << "Got a room here: " << i << std::endl;
 		//pixels.setPixel(rooms[i]->row, rooms[i]->column, sf::Color::White);
 		sf::Color color = sf::Color((rand() % 256), (rand() % 256), (rand() % 256));
 		for (int r = node->row; r < (node->row + node->height); r++)
@@ -524,48 +544,48 @@ std::vector<std::vector<int>> Generator::GenerateBSPOutput(std::vector<std::vect
 	{
 		Node* node = rooms[i];
 
-		std::cout << "Adding room!" << std::endl;
+		//std::cout << "Adding room!" << std::endl;
 		for (int r = node->row + 1; r < (node->row + node->height); r++)
 		{
 			for (int c = node->column + 1; c < (node->column + node->width); c++)
 			{
-				std::cout << "Adding tile thing at R: " << r << " , C: " << c << std::endl;
+				//std::cout << "Adding tile thing at R: " << r << " , C: " << c << std::endl;
 
 				map[r][c] = 3;
 			}
 		}
 	}
 
-	for (int i = 0; i < rooms.size(); i++)
-	{
-		Node* node = rooms[i];
-		int xCenter = node->row + (node->height / 2);
-		int yCenter = node->column + (node->width / 2);
+	//for (int i = 0; i < rooms.size(); i++)
+	//{
+	//	Node* node = rooms[i];
+	//	int xCenter = node->row + (node->height / 2);
+	//	int yCenter = node->column + (node->width / 2);
 
-		//map[xCenter][yCenter] = 3;
-		std::cout << "XCenter " << xCenter << " , " << "YCenter " << yCenter << std::endl;
-		Node* closestNode;
-		int closestDist = 99999999;
-		for (int s = 0; s < rooms.size(); s++)
-		{
-			Node* tempNode = rooms[s];
-			int tempX = tempNode->row + (tempNode->width / 2);
-			int tempY = tempNode->column + (tempNode->height / 2);
+	//	//map[xCenter][yCenter] = 3;
+	//	std::cout << "XCenter " << xCenter << " , " << "YCenter " << yCenter << std::endl;
+	//	Node* closestNode;
+	//	int closestDist = 99999999;
+	//	for (int s = 0; s < rooms.size(); s++)
+	//	{
+	//		Node* tempNode = rooms[s];
+	//		int tempX = tempNode->row + (tempNode->width / 2);
+	//		int tempY = tempNode->column + (tempNode->height / 2);
 
-			//std::cout << "XTempCenter " << tempX << " , " << "YTempCenter " << tempX << std::endl;
+	//		//std::cout << "XTempCenter " << tempX << " , " << "YTempCenter " << tempX << std::endl;
 
-			int distance = sqrt(pow(tempX - xCenter, 2) +
-				pow(tempY - yCenter, 2) * 1.0);
+	//		int distance = sqrt(pow(tempX - xCenter, 2) +
+	//			pow(tempY - yCenter, 2) * 1.0);
 
-			//std::cout << "Distance = " << distance << std::endl;
+	//		//std::cout << "Distance = " << distance << std::endl;
 
-			if (distance < closestDist && distance != 0)
-			{
-				closestDist = distance;
-				closestNode = tempNode;
-			}
-		}
-	}
+	//		if (distance < closestDist && distance != 0)
+	//		{
+	//			closestDist = distance;
+	//			closestNode = tempNode;
+	//		}
+	//	}
+	//}
 
 		//std::cout << "Distance: " << closestDist << std::endl;
 
@@ -699,7 +719,7 @@ std::vector<std::vector<int>> Generator::CreateHall(Node* root, std::vector<std:
 			curMap = CreateHall(root->B, curMap);
 		}
 
-		std::cout << "Pair1: " << root->A->row << ", " << root->A->column << " ::: " << root->B->row << ", " << root->B->column << std::endl;
+		//std::cout << "Pair1: " << root->A->row << ", " << root->A->column << " ::: " << root->B->row << ", " << root->B->column << std::endl;
 
 		int Room1XCenter = root->A->column + (root->A->width / 2);
 		int Room1YCenter = root->A->row + (root->A->height / 2);
@@ -710,9 +730,9 @@ std::vector<std::vector<int>> Generator::CreateHall(Node* root, std::vector<std:
 		int distance = sqrt(pow(Room2XCenter - Room1XCenter, 2) +
 			pow(Room2YCenter - Room1YCenter, 2) * 1.0);
 
-		std::cout << "Distance: " << distance << std::endl;
+		//std::cout << "Distance: " << distance << std::endl;
 
-		std::cout << "Room1 Center: " << Room1XCenter << ", " << Room1YCenter << " : Room2 Center: " << Room2XCenter << ", " << Room2YCenter << std::endl;
+		//std::cout << "Room1 Center: " << Room1XCenter << ", " << Room1YCenter << " : Room2 Center: " << Room2XCenter << ", " << Room2YCenter << std::endl;
 
 		if (Room2XCenter == Room1XCenter)
 		{

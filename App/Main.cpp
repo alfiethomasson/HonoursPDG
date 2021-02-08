@@ -1,3 +1,11 @@
+#include "imgui.h"
+#include "imgui-SFML.h"
+
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
+
 #include <iostream>
 #include "Grid.h"
 #include "Generator.h"
@@ -15,9 +23,15 @@ int main(int argc, char** argv)
 	bool inMenu = true;
 
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Dungeon Generator");
+
+	window.setFramerateLimit(60);
+	ImGui::SFML::Init(window);
 	//sf::CircleShape shape(100.f);
 	sf::Font font;
 	font.loadFromFile("D:/fonts/ARIALBD.ttf");
+
+	sf::Clock deltaClock;
+
 	sf::Text title("Dungeon	Generator", font);
 	sf::Text DrunkardWalkText("Cellular Automata - 1", font);
 	sf::Text BSPText("Binary Space Partitioning - 2", font);
@@ -95,7 +109,7 @@ int main(int argc, char** argv)
 
 
 	sf::String methodName = "Test";
-	Generator* gen = new Generator(methodName, 30, 30);
+	Generator* gen = new Generator(methodName, 50, 50);
 	//std::vector<std::vector<int>> caGrid = gen->GenerateMapTiles(10, 10, 100, 1);
 	std::vector<std::vector<int>> BSPGrid;
 
@@ -115,10 +129,6 @@ int main(int argc, char** argv)
 
 	TileMap caMap;
 	TileMap bspMap;
-	/*if (!caMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), BSPGrid, 30, 30))
-	{
-		cout << "Failed to load tileset" << endl;
-	}*/
 
 	std::cout << "After tilemap load" << std::endl;
 
@@ -145,6 +155,19 @@ int main(int argc, char** argv)
 	sf::String playerInput;
 	sf::Text inputText;
 
+	int SizeInt = 50;
+
+	int AliveInt = 42;
+	int BirthInt = 4;
+	int IterationsInt = 2;
+	int DeathInt = 3;
+
+	int depthInt = 5;
+	int minHorInt = 30;
+	int maxHorInt = 60;
+	int minVerInt = 30;
+	int maxVerInt = 60;
+
 	inputText.setFont(font);
 	inputText.setCharacterSize(30);
 	inputText.setPosition(0.0f, 0.0f);
@@ -154,26 +177,11 @@ int main(int argc, char** argv)
 		sf::Vector2i tempPos = sf::Mouse::getPosition(window);
 		sf::Vector2f cursPos = sf::Vector2f(tempPos);
 
-		if (AliveAtStartBox.contains(cursPos))
-		{
-
-		}
-		else if (BirthNumberBox.contains(cursPos))
-		{
-
-		}
-		else if (IterationsBox.contains(cursPos))
-		{
-
-		}
-		else if (DeathLimitBox.contains(cursPos))
-		{
-
-		}
-
 		sf::Event event;
+
 		while (window.pollEvent(event))
 		{
+			ImGui::SFML::ProcessEvent(event);
 			if (event.type == sf::Event::Closed)
 				window.close();
 
@@ -184,10 +192,20 @@ int main(int argc, char** argv)
 				if (wheelMovement == 1)
 				{
 					mainView.zoom(curZoom - 0.05f);
+					curZoom -= 0.01f;
+					if (curZoom < 0.0f)
+					{
+						curZoom = 0.0f;
+					}
 				}
 				else
 				{
 					mainView.zoom(curZoom + 0.05f);
+					curZoom += 0.01f;
+					if (curZoom > 1.0f)
+					{
+						curZoom = 1.0f;
+					}
 				}
 				window.setView(mainView);
 			}
@@ -248,7 +266,16 @@ int main(int argc, char** argv)
 					DeathText.setString(curString);
 				}
 			}
+
+			if (event.type == sf::Event::Closed) {
+				window.close();
+			}
 		}
+
+		ImGui::SFML::Update(window, deltaClock.restart());
+
+		//ImGui::Begin("Hello, world!");
+		//ImGui::Button("Look at this pretty button");
 
 		if (inMenu)
 		{
@@ -288,37 +315,54 @@ int main(int argc, char** argv)
 		else
 		{
 
+			ImGui::Begin("Generator Options");
+			ImGui::SliderInt("Size", &SizeInt, 20.0, 100.0);
+
+
 			if (drunkardwalkActive)
 			{
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
-				{
-					std::string AliveString = AliveInputText.getString();
-					std::cout << "Trying to convert string: " << AliveString << std::endl;
-					std::string BirthString = BirthInputText.getString();
-					std::string IterationsString = IterationsInputText.getString();
-					std::string DeathLimitString = DeathText.getString();
-					int AlivePercent = std::stoi(AliveString);
-					std::cout << "Converted string: " << AlivePercent << std::endl;
-					int BirthNum = std::stoi(BirthString);
-					int iterations = std::stoi(IterationsString);
-					int DeathLimit = std::stoi(DeathLimitString);
-					caGrid = gen->GenerateMapTiles(30, 30, AlivePercent, BirthNum, iterations, DeathLimit, 1);
-					if (!caMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), caGrid, 30, 30))
-					{
-						cout << "Failed to load tileset" << endl;
-					}
-					//imgText.loadFromImage(output);
-					//dungeon.setTexture(imgText);
 
-				}
+				ImGui::SliderInt("% To Start Alive", &AliveInt, 1.0, 100.0);
+				ImGui::SliderInt("Neighbours to Birth Cell", &BirthInt, 0.0, 9.0);
+				ImGui::SliderInt("Iterations", &IterationsInt, 0.0, 20.0);
+				ImGui::SliderInt("Neighbours to Kill Cell", &DeathInt, 0.0, 9.0);
+
+				//if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+				//{
+				//	std::string AliveString = AliveInputText.getString();
+				//	std::cout << "Trying to convert string: " << AliveString << std::endl;
+				//	std::string BirthString = BirthInputText.getString();
+				//	std::string IterationsString = IterationsInputText.getString();
+				//	std::string DeathLimitString = DeathText.getString();
+				//	int AlivePercent = std::stoi(AliveString);
+				//	std::cout << "Converted string: " << AlivePercent << std::endl;
+				//	int BirthNum = std::stoi(BirthString);
+				//	int iterations = std::stoi(IterationsString);
+				//	int DeathLimit = std::stoi(DeathLimitString);
+				//	caGrid = gen->GenerateMapTiles(30, 30, AlivePercent, BirthNum, iterations, DeathLimit, 1);
+				//	if (!caMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), caGrid, 30, 30))
+				//	{
+				//		cout << "Failed to load tileset" << endl;
+				//	}
+				//	//imgText.loadFromImage(output);
+				//	//dungeon.setTexture(imgText);
+
+				//}
 			}
 			else if (bspActive)
 			{
+
+				ImGui::SliderInt("Depth", &depthInt, 1.0, 100.0);
+				ImGui::SliderInt("Minimum Horizontal Split", &minHorInt, 0.0, 100.0);
+				ImGui::SliderInt("Maximum Horizontal Split", &maxHorInt, 0.0, 100.0);
+				ImGui::SliderInt("Minimum Vertical Split", &minVerInt, 0.0, 100.0);
+				ImGui::SliderInt("Maximum Vertical Split", &maxVerInt, 0.0, 100.0);
+
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
 				{
-					BSPGrid = gen->GenerateBSP();
+					BSPGrid = gen->GenerateBSP(SizeInt, depthInt, minHorInt, maxHorInt, minVerInt, maxVerInt);
 
-					if (!bspMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), BSPGrid, 30, 30))
+					if (!bspMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
 					{
 						cout << "Failed to load tileset" << endl;
 					}
@@ -328,22 +372,22 @@ int main(int argc, char** argv)
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 			{
-				mainView.move(-1.f * (curZoom * 0.1f), 0.f);
+				mainView.move(-10.f * (curZoom), 0.f);
 				window.setView(mainView);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			{
-				mainView.move(1.f * (curZoom * 0.1f), 0.f);
+				mainView.move(10.f * (curZoom), 0.f);
 				window.setView(mainView);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
-				mainView.move(0.f, 1.f * (curZoom * 0.1f));
+				mainView.move(0.f, 10.f * (curZoom));
 				window.setView(mainView);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
-				mainView.move(0.f, -1.f * (curZoom * 0.1f));
+				mainView.move(0.f, -10.f * (curZoom));
 				window.setView(mainView);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -353,30 +397,43 @@ int main(int argc, char** argv)
 				inMenu = true;
 			}
 
+
+			if (ImGui::Button("Generate"))
+			{
+				if (drunkardwalkActive)
+				{
+					caGrid = gen->GenerateMapTiles(SizeInt, SizeInt, AliveInt, BirthInt, IterationsInt, DeathInt, 1);
+					if (!caMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), caGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+				}
+				else
+				{
+					BSPGrid = gen->GenerateBSP(depthInt, SizeInt, minHorInt, maxHorInt, minVerInt, maxVerInt);
+
+					if (!bspMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+				}
+			}
 			window.clear();
 
 
 			if (drunkardwalkActive)
 			{
-				window.draw(CAValues);
-				window.draw(AliveAtStartText);
-				window.draw(BirthNumberText);
-				window.draw(IterationsText);
-				window.draw(DeathLimitText);
-				window.draw(AliveInputText);
-				window.draw(BirthInputText);
-				window.draw(IterationsInputText);
-				window.draw(DeathText);
-
-				window.draw(inputText);
-
 				window.draw(caMap);
 			}
 			else if (bspActive)
 			{
 				window.draw(bspMap);
 			}
+
+			ImGui::End();
 		}
+		ImGui::SFML::Render(window);
+		//ImGui::End();
 		window.display();
 	}
 
