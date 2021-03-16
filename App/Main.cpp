@@ -12,9 +12,216 @@
 #include <random>
 #include <string> 
 #include <SFML/Graphics.hpp>
-#include "TileMap.h"
+//#include "TileMap.h"
+#include "Player.h"
+#include <windows.h>
 
 using namespace std;
+
+sf::Sprite player;
+
+void PlayerMovement()
+{
+	
+}
+
+std::vector<std::vector<int>> startAgent(std::vector<std::vector<int>> mapVec, int x, int y)
+{
+	mapVec.clear();
+	for (int i = 0; i < x; i++)
+	{
+		std::vector<int> row;
+		//row.reserve(32);
+		for (int r = 0; r < y; r++)
+		{
+			row.push_back(1);
+		}
+		mapVec.push_back(row);
+	}
+
+	std::cout << "End of start agent " << std::endl;
+
+	return mapVec;
+}
+
+int AgentDirection(int curDirection, int switchChance)
+{
+	if ((rand() % 100 + 1) <= switchChance)
+	{
+		std::cout << "Inside check switch chance" << std::endl;
+		int pastDir = curDirection;
+		while (curDirection == pastDir)
+		{
+			curDirection = rand() % 3;
+		}
+	}
+
+	return curDirection;
+}
+
+std::vector<std::vector<int>> AgentStep(std::vector<std::vector<int>> mapVec, int point[2], int xVal, int yVal, int switchChance, bool placeRoom, int direction)
+{
+
+	//std::cout << "Inside Agent Step!" << std::endl;
+	//std::cout << "Point is: " << point[0] << ", " << point[1] << std::endl;
+	//std::cout << "mapVec count = " << mapVec.size() << std::endl;
+	//std::cout << "Direction = " << direction << endl;
+
+	
+
+	//std::cout << "Vector at 25 25: " << mapVec[25][25] << endl;
+
+	/*if ((rand() % 100 + 1) <= switchChance)
+	{
+		std::cout << "Inside check switch chance" << std::endl;
+		int pastDir = direction;
+		while (direction == pastDir)
+		{
+			direction = dir(gen);
+		}
+	}*/
+
+
+	if (placeRoom)
+	{
+		//std::cout << "Inside check room chance" << std::endl;
+		//std::cout << "Placing room" << std::endl;
+		// Do Room Code;
+		int randXSize = rand() % 6 + 2;
+		int randYSize = rand() % 6 + 2;
+		//std::cout << "Room Size = " << randXSize << ", " << randYSize << std::endl;
+		if (randXSize % 2 == 0)
+		{
+			for (int x = 0 - (randXSize / 2); x < (randXSize / 2); x++)
+			{
+				if (randYSize % 2 == 0)
+				{
+					for (int y = 0 - (randYSize / 2); y < (randYSize / 2); y++)
+					{
+						if (point[0] + x < xVal && point[0] + x >= 0 && point[1] + y < yVal && point[1] + y >= 0)
+						{
+							int p1 = point[0] + x;
+							int p2 = point[1] + y;
+							//std::cout << "Trying to place at: " << p1 << ", " << p2 << std::endl;
+							mapVec[point[0] + x][point[1] + y] = 0;
+						}
+
+					}
+				}
+				else
+				{
+					for (int y = 0 - (randYSize / 2); y < ((randYSize / 2) + 1); y++)
+					{
+						if (point[0] + x < xVal && point[0] + x >= 0 && point[1] + y < yVal && point[1] + y >= 0)
+						{
+							int p1 = point[0] + x;
+							int p2 = point[1] + y;
+							//	std::cout << "Trying to place at: " << p1 << ", " << p2 << std::endl;
+							mapVec[point[0] + x][point[1] + y] = 0;
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			for (int x = 0 - (randXSize / 2); x < ((randXSize / 2) + 1); x++)
+			{
+				if (randYSize % 2 == 0)
+				{
+					for (int y = 0 - (randYSize / 2); y < (randYSize / 2); y++)
+					{
+						if (point[0] + x < xVal && point[0] + x >= 0 && point[1] + y < yVal && point[1] + y >= 0)
+						{
+							int p1 = point[0] + x;
+							int p2 = point[1] + y;
+							//std::cout << "Trying to place at: " << p1 << ", " << p2 << std::endl;
+							mapVec[point[0] + x][point[1] + y] = 0;
+						}
+					}
+				}
+				else
+				{
+					for (int y = 0 - (randYSize / 2); y < ((randYSize / 2) + 1); y++)
+					{
+						if (point[0] + x < xVal && point[0] + x >= 0 && point[1] + y < yVal && point[1] + y >= 0)
+						{
+							int p1 = point[0] + x;
+							int p2 = point[1] + y;
+							//	std::cout << "Trying to place at: " << p1 << ", " << p2 << std::endl;
+							mapVec[point[0] + x][point[1] + y] = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//std::cout << "placing point" << std::endl;
+
+	switch (direction)
+	{
+		//North
+	case 0:
+
+		if (point[1] != 0)
+		{
+			mapVec[point[0]][point[1] - 1] = 0;
+			point[1]--;
+			break;
+		}
+		else
+		{
+			break;
+		}
+
+		//East
+	case 1:
+
+		if (point[0] != (xVal - 1))
+		{
+			mapVec[point[0] + 1][point[1]] = 0;
+			point[0]++;
+			break;
+		}
+		else
+		{
+			break;
+		}
+
+		//South
+	case 2:
+
+		if (point[1] != (yVal - 1))
+		{
+			mapVec[point[0]][point[1] + 1] = 0;
+			point[1]++;
+			break;
+		}
+		else
+		{
+			break;
+		}
+
+		//West
+	case 3:
+
+		if (point[0] != 0)
+		{
+			mapVec[point[0] - 1][point[1]] = 0;
+			point[0]--;
+			break;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//std::cout << "end of this" << endl;
+
+	return mapVec;
+}
 
 
 int main(int argc, char** argv)
@@ -28,31 +235,53 @@ int main(int argc, char** argv)
 	ImGui::SFML::Init(window);
 	//sf::CircleShape shape(100.f);
 	sf::Font font;
-	font.loadFromFile("D:/fonts/ARIALBD.ttf");
+	font.loadFromFile("res/Fonts/ARIALBD.ttf");
 
 	sf::Clock deltaClock;
+
+	sf::Texture playerTex;
+	if (!playerTex.loadFromFile("res/Red.png"))
+	{
+		std::cout << "Failed to load player texture" << endl;
+	}
+
+	Player* pl = new Player(1);
 
 	sf::Text title("Dungeon	Generator", font);
 	sf::Text DrunkardWalkText("Cellular Automata - 1", font);
 	sf::Text BSPText("Binary Space Partitioning - 2", font);
 	sf::Text AgentText("Agent Based - 3", font);
-	sf::Text GAText("Genetic Algorithm - 4", font);
+	sf::Text GAText("Bounce Apart - 4", font);
+	sf::Text LoadText("Load Map - 5", font);
 	title.setCharacterSize(40);
 	DrunkardWalkText.setCharacterSize(30);
 	BSPText.setCharacterSize(30);
 	AgentText.setCharacterSize(30);
 	GAText.setCharacterSize(30);
+	LoadText.setCharacterSize(30);
 	title.setFillColor(sf::Color::White);
 	DrunkardWalkText.setFillColor(sf::Color::White);
 	BSPText.setFillColor(sf::Color::White);
 	AgentText.setFillColor(sf::Color::White);
 	GAText.setFillColor(sf::Color::White);
+	LoadText.setFillColor(sf::Color::White);
 
 	title.setPosition(200.0f, 0.0f);
 	DrunkardWalkText.setPosition(225.0f, 100.0f);
 	BSPText.setPosition(225.0f, 200.0f);
 	AgentText.setPosition(225.0f, 300.0f);
 	GAText.setPosition(225.0f, 400.0f);
+	LoadText.setPosition(225.0f, 500.0f);
+
+	char InputBuf[50] = { 0 };
+	sf::Sprite inputSprite;
+	sf::Texture inputTex;
+
+	sf::Text SmoothText("Smooth: Off", font);
+	sf::Text MipmapText("Mipmap: Off", font);
+
+	SmoothText.setPosition(0.0f, 50.0f);
+	MipmapText.setPosition(0.0f, 150.0f);
 
 	sf::Text CAValues("CA Values", font);
 	sf::Text AliveAtStartText("Start Alive %: ", font);
@@ -112,7 +341,9 @@ int main(int argc, char** argv)
 	Generator* gen = new Generator(methodName, 50, 50);
 	//std::vector<std::vector<int>> caGrid = gen->GenerateMapTiles(10, 10, 100, 1);
 	std::vector<std::vector<int>> BSPGrid;
-
+	std::vector<std::vector<int>> AgentGrid;
+	std::vector<std::vector<int>> BounceGrid;
+	std::vector<std::vector<int>> saveMap;
 	std::vector<std::vector<int>> caGrid;
 
 	std::cout << "Before tilemap load" << std::endl;
@@ -129,16 +360,44 @@ int main(int argc, char** argv)
 
 	TileMap caMap;
 	TileMap bspMap;
+	TileMap agentMap;
+	TileMap inputMap;
+	TileMap bounceMap;
+
+	//caMap.setSmooth();
 
 	std::cout << "After tilemap load" << std::endl;
 
 	bool bspActive = false; 
 	bool drunkardwalkActive = false;
+	bool agentActive = false;
+	bool agentWorking = false;
+	bool loadActive = false;
+	bool bounceActive = false;
+	bool playerViewActive = false;
+	bool agentWeight = false;
 
-	sf::View mainView(sf::FloatRect(0.f, 0.f, 800.f, 600.f));
+	bool playerActive = false;
+	bool placeRoomBool = false;
+
+	bool smoothOn = false;
+	bool mipmapOn = false;
+
+	int direction;
+	int switchWeight = 0;
+	int curAgentIter = 0;
+	int weightIterations = 1;
+	int weightVal = 1;
+	bool straightAgent = false;
+	int minStraightLength = 2;
+	int straightLength = 0;
+
+	sf::View mainView(sf::FloatRect(0.f, 0.f, 800.0f, 600.f));
 
 	window.setView(mainView);
 	float curZoom = 1.f;
+
+	sf::View playerView(sf::FloatRect(0.f, 0.f, 800.f, 600.f));
 
 	sf::Image output;
 	//output = gen->GenerateDungeon(caGrid, 100, 1);
@@ -168,9 +427,27 @@ int main(int argc, char** argv)
 	int minVerInt = 30;
 	int maxVerInt = 60;
 
+	int switchInt = 5;
+	int roomInt = 5;
+	int IterationsAgentInt = 100;
+	//int roomXInt = 
+
+	int bounceDist = 10;
+	int bounceRooms = 20;
+	int bounceRadius = 10;
+	int bounceRoomMax = 8;
+	int bounceRoommin = 2;
+
+	double startTime;
+	int agentPoint[2];
+
 	inputText.setFont(font);
 	inputText.setCharacterSize(30);
 	inputText.setPosition(0.0f, 0.0f);
+
+	gen->Reset(SizeInt, SizeInt, AliveInt);
+
+	srand(1020);
 
 	while (window.isOpen())
 	{
@@ -184,31 +461,6 @@ int main(int argc, char** argv)
 			ImGui::SFML::ProcessEvent(event);
 			if (event.type == sf::Event::Closed)
 				window.close();
-
-			if (event.type == sf::Event::MouseWheelMoved)
-			{
-				//std::cout << event.mouseWheel.delta << std::endl;
-				int wheelMovement = event.mouseWheel.delta;
-				if (wheelMovement == 1)
-				{
-					mainView.zoom(curZoom - 0.05f);
-					curZoom -= 0.01f;
-					if (curZoom < 0.0f)
-					{
-						curZoom = 0.0f;
-					}
-				}
-				else
-				{
-					mainView.zoom(curZoom + 0.05f);
-					curZoom += 0.01f;
-					if (curZoom > 1.0f)
-					{
-						curZoom = 1.0f;
-					}
-				}
-				window.setView(mainView);
-			}
 
 			if (event.type == sf::Event::TextEntered)
 			{
@@ -267,6 +519,69 @@ int main(int argc, char** argv)
 				}
 			}
 
+			if (event.type == sf::Event::MouseWheelMoved && !inMenu)
+			{
+				//std::cout << event.mouseWheel.delta << std::endl;
+				int wheelMovement = event.mouseWheel.delta;
+				if (wheelMovement == 1)
+				{
+					mainView.zoom(curZoom - 0.05f);
+					curZoom -= 0.01f;
+					if (curZoom < 0.0f)
+					{
+						curZoom = 0.0f;
+					}
+				}
+				else
+				{
+					mainView.zoom(curZoom + 0.05f);
+					curZoom += 0.01f;
+					if (curZoom > 1.0f)
+					{
+						curZoom = 1.0f;
+					}
+				}
+				window.setView(mainView);
+			}
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::N)
+			{
+				smoothOn = !smoothOn;
+				caMap.EnableSmooth(smoothOn);
+				bspMap.EnableSmooth(smoothOn);
+				agentMap.EnableSmooth(smoothOn);
+				inputTex.setSmooth(smoothOn);
+				inputMap.EnableSmooth(smoothOn);
+				bounceMap.EnableSmooth(smoothOn);
+				if (smoothOn)
+				{
+					SmoothText.setString("Smooth: On");
+				}
+				else
+				{
+					SmoothText.setString("Smooth: Off");
+				}
+			}
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::M)
+			{
+				mipmapOn = !mipmapOn;
+				caMap.EnableMipMap(mipmapOn);
+				bspMap.EnableMipMap(mipmapOn);
+				agentMap.EnableMipMap(mipmapOn);
+				inputMap.EnableMipMap(mipmapOn);
+				bounceMap.EnableMipMap(mipmapOn);
+				//caMap.EnableMipMap(mipmapOn);
+				if (mipmapOn)
+				{
+					MipmapText.setString("Mipmap: On");
+				}
+				else
+				{
+					MipmapText.setString("Mipmap: Off");
+				}
+			}
+
 			if (event.type == sf::Event::Closed) {
 				window.close();
 			}
@@ -283,11 +598,31 @@ int main(int argc, char** argv)
 			{
 				inMenu = false;
 				drunkardwalkActive = true;
+				mainView.reset(sf::FloatRect(0.0f, 0.0f, 800.0f, 600.0f));
 			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 			{
 				inMenu = false;
 				bspActive = true;
+				mainView.reset(sf::FloatRect(0.0f, 0.0f, 800.0f, 600.0f));
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+			{
+				inMenu = false;
+				agentActive = true;
+				mainView.reset(sf::FloatRect(0.0f, 0.0f, 800.0f, 600.0f));
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+			{
+				inMenu = false;
+				bounceActive = true;
+				mainView.reset(sf::FloatRect(0.0f, 0.0f, 800.0f, 600.0f));
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
+			{
+				inMenu = false;
+				loadActive = true;
+				mainView.reset(sf::FloatRect(0.0f, 0.0f, 800.0f, 600.0f));
 			}
 			//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 			//{
@@ -306,6 +641,7 @@ int main(int argc, char** argv)
 			window.draw(BSPText);
 			window.draw(AgentText);
 			window.draw(GAText);
+			window.draw(LoadText);
 
 
 
@@ -327,6 +663,33 @@ int main(int argc, char** argv)
 				ImGui::SliderInt("Iterations", &IterationsInt, 0.0, 20.0);
 				ImGui::SliderInt("Neighbours to Kill Cell", &DeathInt, 0.0, 9.0);
 
+				if (playerActive)
+				{
+					pl->Update(caGrid, SizeInt);
+				}
+
+				if (ImGui::Button("Spawn Player"))
+				{
+					caGrid = gen->FindEndpoint(caGrid);
+					if (!caMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), caGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					caMap.EnableMipMap(true);
+					pl->Load(0, 0, false, caGrid);
+					playerActive = true;
+				}
+
+				if (ImGui::Button("Black Background"))
+				{
+					caGrid = gen->ChangeToBlack(caGrid);
+					if (!caMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), caGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					caMap.EnableMipMap(true);
+				}
+
 				//if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
 				//{
 				//	std::string AliveString = AliveInputText.getString();
@@ -340,7 +703,7 @@ int main(int argc, char** argv)
 				//	int iterations = std::stoi(IterationsString);
 				//	int DeathLimit = std::stoi(DeathLimitString);
 				//	caGrid = gen->GenerateMapTiles(30, 30, AlivePercent, BirthNum, iterations, DeathLimit, 1);
-				//	if (!caMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), caGrid, 30, 30))
+				//	if (!caMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), caGrid, 30, 30))
 				//	{
 				//		cout << "Failed to load tileset" << endl;
 				//	}
@@ -358,15 +721,419 @@ int main(int argc, char** argv)
 				ImGui::SliderInt("Minimum Vertical Split", &minVerInt, 0.0, 100.0);
 				ImGui::SliderInt("Maximum Vertical Split", &maxVerInt, 0.0, 100.0);
 
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+				if (ImGui::Button("Spawn Player"))
 				{
-					BSPGrid = gen->GenerateBSP(SizeInt, depthInt, minHorInt, maxHorInt, minVerInt, maxVerInt);
-
-					if (!bspMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
+					BSPGrid = gen->FindEndpoint(BSPGrid);
+					if (!bspMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
 					{
 						cout << "Failed to load tileset" << endl;
 					}
+					bspMap.EnableMipMap(true);
+					pl->Load(0, 0, false, BSPGrid);
+					playerActive = true;
 				}
+
+				if (playerActive)
+				{
+					pl->Update(BSPGrid, SizeInt);
+				}
+
+				if (ImGui::Button("Do Room Size"))
+				{
+					BSPGrid = gen->BSPRandomRooms(BSPGrid);
+					if (!bspMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					bspMap.EnableMipMap(true);
+				}
+
+				if (ImGui::Button("AddCorridors"))
+				{
+					BSPGrid = gen->AddCorridors(SizeInt);
+
+					if (!bspMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+
+					bspMap.EnableMipMap(true);
+				}
+
+				if (ImGui::Button("Black Background"))
+				{
+					BSPGrid = gen->ChangeToBlack(BSPGrid);
+					if (!bspMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					bspMap.EnableMipMap(true);
+				}
+
+			}
+			else if (agentActive)
+			{
+				ImGui::SliderInt("Switch Chance %", &switchInt, 1.0, 100.0);
+				ImGui::SliderInt("Room Chance %", &roomInt, 1.0, 100.0);
+				ImGui::SliderInt("Iterations", &IterationsAgentInt, 1.0, 1000.0);
+				if (agentWeight)
+				{
+					if (ImGui::Button("Enable Switch Weight"))
+					{
+						agentWeight = !agentWeight;
+					}
+				}
+				else
+				{
+					if (ImGui::Button("Disable Switch Weight"))
+					{
+						agentWeight = !agentWeight;
+					}
+				}
+				if (agentWeight)
+				{
+					ImGui::SliderInt("Look Ahead Weight", &weightVal, 1.0, 100.0);
+					ImGui::SliderInt("Look Ahead Iterations", &weightIterations, 1.0, 10);
+				}
+				if (ImGui::Button("Enable Minimum Straight Lines"))
+				{
+					straightAgent = !straightAgent;
+				}
+
+				if (straightAgent)
+				{
+					ImGui::SliderInt("Minimum Straight Length", &minStraightLength, 1.0, 10.0);
+				}
+
+				if (ImGui::Button("Spawn Player"))
+				{
+					AgentGrid = gen->FindEndpoint(AgentGrid);
+					if (!agentMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), AgentGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					agentMap.EnableMipMap(true);
+					pl->Load(0, 0, false, AgentGrid);
+					playerActive = true;
+				}
+
+				if (ImGui::Button("Black Background"))
+				{
+					AgentGrid = gen->ChangeToBlack(AgentGrid);
+					if (!agentMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), AgentGrid, SizeInt, SizeInt))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					agentMap.EnableMipMap(true);
+				}
+
+				if (playerActive)
+				{
+					pl->Update(AgentGrid, SizeInt);
+				}
+
+				if (agentWorking)
+				{
+					double currentTime = GetTickCount() - startTime;
+
+					if (curAgentIter < IterationsAgentInt)
+					{
+						if (currentTime >= 5.0)
+						{
+							//	direction = AgentDirection(direction, switchInt);
+							curAgentIter++;
+
+							switchWeight = 0;
+							if (straightLength > minStraightLength || !straightAgent)
+							{
+								if (agentWeight)
+								{
+									for (int i = 1; i < (weightIterations + 1); i++)
+									{
+										switch (direction)
+										{
+										case 0:
+											if (agentPoint[1] - i > 0)
+											{
+												if (AgentGrid[agentPoint[0]][agentPoint[1] - i] == 1)
+												{
+													switchWeight += weightVal;
+												}
+											}
+										case 1:
+											if (agentPoint[0] + i < SizeInt)
+											{
+												if (AgentGrid[agentPoint[0] + i][agentPoint[1]] == 1)
+												{
+													switchWeight += weightVal;
+												}
+											}
+										case 2:
+											if (agentPoint[1] + i < SizeInt)
+											{
+												if (AgentGrid[agentPoint[0]][agentPoint[1] + i] == 1)
+												{
+													switchWeight += weightVal;
+												}
+											}
+										case 3:
+											if (agentPoint[0] - i > 0)
+											{
+												if (AgentGrid[agentPoint[0] - i][agentPoint[1]] == 1)
+												{
+													switchWeight += weightVal;
+												}
+											}
+										}
+									}
+								}
+
+								if ((rand() % 100 + 1) <= switchInt + switchWeight)
+								{
+									//std::cout << "Inside check switch chance" << std::endl;
+									int pastDir = direction;
+									while (direction == pastDir)
+									{
+										direction = rand() % 3;
+									}
+									straightLength = 0;
+								}
+
+							}
+
+
+							if (agentPoint[0] == 0 && direction == 3)
+							{
+								direction = 1;
+							}
+							else if (agentPoint[0] == AgentGrid.size() - 1 && direction == 1)
+							{
+								direction = 3;
+							}
+							else if (agentPoint[1] == 0 && direction == 0)
+							{
+								direction = 2;
+							}
+							else if (agentPoint[1] == AgentGrid.size() - 1 && direction == 2)
+							{
+								direction = 0;
+							}
+
+							if ((rand() % 100 + 1) <= roomInt)
+							{
+								int pastDir;
+								switch (direction)
+								{
+								case 0:
+									pastDir = 2;
+
+								case 1:
+									pastDir = 3;
+
+								case 2:
+									pastDir = 0;
+
+								case 3:
+									pastDir = 1;
+								}
+								while (direction == pastDir)
+								{
+									direction = rand() % 3;
+								}
+								placeRoomBool = true;
+							}
+							else
+							{
+								placeRoomBool = false;
+							}
+							straightLength++;
+							AgentGrid = AgentStep(AgentGrid, agentPoint, SizeInt, SizeInt, switchInt, placeRoomBool, direction);
+							//AgentGrid = gen->ChangeToBlack(AgentGrid);
+							startTime = GetTickCount();
+							if (!agentMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), AgentGrid, SizeInt, SizeInt))
+							{
+								cout << "Failed to load tileset" << endl;
+							}
+							agentMap.EnableMipMap(true);
+						}
+					}
+					else
+					{
+						agentWorking = false;
+					}
+				}
+
+				if (ImGui::Button("Start Agent"))
+				{
+					if (agentWorking)
+					{
+						agentWorking = false;
+					}
+					else
+					{
+						srand(1000);
+						curAgentIter = 0;
+						AgentGrid = startAgent(AgentGrid, SizeInt, SizeInt);
+
+						int ran1 = rand() % ((SizeInt / 2) + (SizeInt / 4)) + (SizeInt / 4);
+						int ran2 = rand() % ((SizeInt / 2) + (SizeInt / 4)) + (SizeInt / 4);
+
+						int randPoint[2];
+						randPoint[0] = ran1;
+						//std::cout << "Rand point 0 = " << randPoint[0] << std::endl;
+						randPoint[1] = ran2;
+						agentPoint[0] = randPoint[0];
+						agentPoint[1] = randPoint[1];
+
+						std::uniform_int_distribution<> dir(0, 3);
+						direction = rand() % 3;
+
+						startTime = GetTickCount();
+						agentWorking = true;
+					}
+				}
+			}
+			else if (bounceActive)
+			{
+
+				ImGui::SliderInt("Number of Rooms", &bounceRooms, 1.0, 50);
+				ImGui::SliderInt("Radius to spawn Rooms", &bounceRadius, 5.0, 30.0);
+				ImGui::SliderInt("Minimum Room Size", &bounceRoommin, 1.0, 20.0);
+				ImGui::SliderInt("Maximum Room Size", &bounceRoomMax, 1.0, 20.0);
+				ImGui::SliderInt("Maximum Distance to spawn corridor", &bounceDist, 5.0, 30.0);
+
+				if (playerActive)
+				{
+					pl->Update(BounceGrid, SizeInt);
+				}
+
+				if (ImGui::Button("Add Corridors"))
+				{
+					BounceGrid = gen->ConstraintCorridors(100, 100, bounceDist);
+
+					if (!bounceMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BounceGrid, 100, 100))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					bounceMap.EnableMipMap(true);
+				}
+
+				if (ImGui::Button("Spawn Player"))
+				{
+					BounceGrid = gen->FindEndpoint(BounceGrid);
+					if (!bounceMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BounceGrid, 100, 100))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					bounceMap.EnableMipMap(true);
+					pl->Load(0, 0, false, BounceGrid);
+					playerActive = true;
+				}
+
+				if (ImGui::Button("Black Background"))
+				{
+					BounceGrid = gen->ChangeToBlack(BounceGrid);
+					if (!bounceMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BounceGrid, 100, 100))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					bounceMap.EnableMipMap(true);
+				}
+			}
+			else if (loadActive)
+				{
+				ImGui::InputText("File Path", InputBuf, IM_ARRAYSIZE(InputBuf));
+
+				if (ImGui::Button("Load From File"))
+				{
+					sf::String fp;
+					fp += "D:/SaveImages/";
+					sf::String png;
+					png += ".png";
+
+					fp += InputBuf;
+					fp += png;
+					sf::Image testImg;
+					testImg.loadFromFile(fp);
+
+					std::vector<std::vector<int>> loadGrid;
+
+					for (int i = 0; i < testImg.getSize().x; i++)
+					{
+						std::vector<int> row;
+						for (int y = 0; y < testImg.getSize().y; y++)
+						{
+							if (testImg.getPixel(i, y) == sf::Color::Black)
+							{
+								row.push_back(1);
+							}
+							else if (testImg.getPixel(i, y) == sf::Color::White)
+							{
+								row.push_back(0);
+							}
+						}
+						loadGrid.push_back(row);
+					}
+
+					if (!inputMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), loadGrid, testImg.getSize().x, testImg.getSize().y))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					inputMap.EnableMipMap(true);
+
+					saveMap = loadGrid;
+				}
+
+				if (ImGui::Button("Default Load"))
+				{
+					sf::Image testImg;
+					testImg.loadFromFile("D:/SaveImages/SavedImage.png");
+
+					std::vector<std::vector<int>> loadGrid;
+
+					for (int i = 0; i < testImg.getSize().x; i++)
+					{
+						std::vector<int> row;
+						for (int y = 0; y < testImg.getSize().y; y++)
+						{
+							if (testImg.getPixel(i, y) == sf::Color::Black)
+							{
+								row.push_back(1);
+							}
+							else if (testImg.getPixel(i, y) == sf::Color::White)
+							{
+								row.push_back(0);
+							}
+						}
+						loadGrid.push_back(row);
+					}
+
+					if (!inputMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), loadGrid, testImg.getSize().x, testImg.getSize().y))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					inputMap.EnableMipMap(true);
+
+					saveMap = loadGrid;
+				}
+
+				if (ImGui::Button("Spawn Player"))
+				{
+					saveMap = gen->FindEndpoint(saveMap);
+					if (!inputMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), saveMap, saveMap.size(), saveMap.size()))
+					{
+						cout << "Failed to load tileset" << endl;
+					}
+					inputMap.EnableMipMap(true);
+					pl->Load(0, 0, false, saveMap);
+					playerActive = true;
+				}
+
+				if (playerActive)
+				{
+					pl->Update(saveMap, SizeInt);
+				}
+
 			}
 
 
@@ -390,36 +1157,201 @@ int main(int argc, char** argv)
 				mainView.move(0.f, -10.f * (curZoom));
 				window.setView(mainView);
 			}
+
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			{
 				drunkardwalkActive = false;
 				bspActive = false;
+				agentActive = false;
+				loadActive = false;
+				playerActive = false;
 				inMenu = true;
+				mainView.reset(sf::FloatRect(0.0f, 0.0f, 800.0f, 600.0f));
+				mainView.zoom(1.0f + (curZoom * 0.05));
+				window.setView(mainView);
+			}
+			if (!loadActive)
+			{
+				if (ImGui::Button("Reset"))
+				{
+					gen->Reset(SizeInt, SizeInt, AliveInt);
+				}
+
+				if (ImGui::Button("Step"))
+				{
+					if (drunkardwalkActive)
+					{
+						caGrid = gen->GenerateMapTiles(SizeInt, SizeInt, AliveInt, BirthInt, IterationsInt, DeathInt, 1, true, 1);
+						if (!caMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), caGrid, SizeInt, SizeInt))
+						{
+							cout << "Failed to load tileset" << endl;
+						}
+						caMap.EnableMipMap(true);
+					}
+					if (bspActive)
+					{
+						BSPGrid = gen->GenerateBSP(depthInt, SizeInt, minHorInt, maxHorInt, minVerInt, maxVerInt, true, 1);
+
+						if (!bspMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
+						{
+							cout << "Failed to load tileset" << endl;
+						}
+						bspMap.EnableMipMap(true);
+					}
+					if (bounceActive)
+					{
+						BounceGrid = gen->GenerateConstraint(100, 100, true, 1, bounceRoomMax, bounceRoommin, bounceRooms, bounceRadius);
+
+						if (!bounceMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BounceGrid, 100, 100))
+						{
+							cout << "Failed to load tileset" << endl;
+						}
+						bounceMap.EnableMipMap(true);
+					}
+				}
+
+				if (ImGui::Button("Generate Full"))
+				{
+					if (drunkardwalkActive)
+					{
+						caGrid = gen->GenerateMapTiles(SizeInt, SizeInt, AliveInt, BirthInt, IterationsInt, DeathInt, 1, false, IterationsInt);
+						if (!caMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), caGrid, SizeInt, SizeInt))
+						{
+							cout << "Failed to load tileset" << endl;
+						}
+						caMap.EnableMipMap(true);
+					}
+					else if (bspActive)
+					{
+						gen->Reset(SizeInt, SizeInt, AliveInt);
+						BSPGrid = gen->GenerateBSP(depthInt, SizeInt, minHorInt, maxHorInt, minVerInt, maxVerInt, false, depthInt);
+
+						if (!bspMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
+						{
+							cout << "Failed to load tileset" << endl;
+						}
+						bspMap.EnableMipMap(true);
+					}
+					else if (agentActive)
+					{
+						AgentGrid = gen->GenerateAgent(SizeInt, SizeInt, switchInt, roomInt, IterationsAgentInt);
+
+						if (!agentMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), AgentGrid, SizeInt, SizeInt))
+						{
+							cout << "Failed to load tileset" << endl;
+						}
+						agentMap.EnableMipMap(true);
+					}
+					else if (bounceActive)
+					{
+						BounceGrid = gen->GenerateConstraint(100, 100, false, 5, bounceRoomMax, bounceRoommin, bounceRooms, bounceRadius);
+						if (!bounceMap.load("res/Tilesets/Tileset.png", sf::Vector2u(32, 32), BounceGrid, 100, 100))
+						{
+							cout << "Failed to load tileset" << endl;
+						}
+						bounceMap.EnableMipMap(true);
+					}
+				}
+
+				if (ImGui::Button("Save Map"))
+				{
+					sf::Image saveImage;
+					saveImage.create(SizeInt, SizeInt, sf::Color::Black);
+
+					std::vector<std::vector<int>> saveMap;
+					for (int i = 0; i < SizeInt; i++)
+					{
+						std::vector<int> row;
+						for (int y = 0; y < SizeInt; y++)
+						{
+							int cellVal;
+							if (drunkardwalkActive)
+							{
+								std::cout << "Pushing: " << caGrid[i][y] << std::endl;
+								row.push_back(caGrid[i][y]);
+								cellVal = caGrid[i][y];
+							}
+							else if (bspActive)
+							{
+								row.push_back(BSPGrid[i][y]);
+								cellVal = BSPGrid[i][y];
+							}
+							else if (agentActive)
+							{
+								row.push_back(AgentGrid[i][y]);
+								cellVal = AgentGrid[i][y];
+							}
+							else if (bounceActive)
+							{
+								row.push_back(BounceGrid[i][y]);
+								cellVal = AgentGrid[i][y];
+							}
+
+							if (cellVal == 0)
+							{
+								saveImage.setPixel(i, y, sf::Color::White);
+							}
+							else if (cellVal == 1)
+							{
+								saveImage.setPixel(i, y, sf::Color::Black);
+							}
+						}
+						saveMap.push_back(row);
+					}
+
+					int saveNum1 = rand() % 9;
+					int saveNum2 = rand() % 9;
+					int saveNum3 = rand() % 9;
+					int saveNum4 = rand() % 9;
+					int saveNum5 = rand() % 9;
+
+					sf::String ranSeed;
+					ranSeed += std::to_string(saveNum1);
+					ranSeed += std::to_string(saveNum2);
+					ranSeed += std::to_string(saveNum3);
+					ranSeed += std::to_string(saveNum4);
+					ranSeed += std::to_string(saveNum5);
+
+					if (drunkardwalkActive)
+					{
+						saveImage.saveToFile("D:/SaveImages/CASave" + ranSeed + ".png");
+					}
+					if (bspActive)
+					{
+						saveImage.saveToFile("D:/SaveImages/BSPSave" + ranSeed + ".png");
+					}
+					if (agentActive)
+					{
+						saveImage.saveToFile("D:/SaveImages/AgentSave" + ranSeed + ".png");
+					}
+					if (bounceActive)
+					{
+						saveImage.saveToFile("D:/SaveImages/ConstraintSave" + ranSeed + ".png");
+					}
+				}
 			}
 
-
-			if (ImGui::Button("Generate"))
+			if (playerActive)
 			{
-				if (drunkardwalkActive)
+				playerView.setCenter(pl->GetPos());
+
+				if (ImGui::Button("Switch Camera View"))
 				{
-					caGrid = gen->GenerateMapTiles(SizeInt, SizeInt, AliveInt, BirthInt, IterationsInt, DeathInt, 1);
-					if (!caMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), caGrid, SizeInt, SizeInt))
-					{
-						cout << "Failed to load tileset" << endl;
-					}
+					playerViewActive = !playerViewActive;
+				}
+				if (playerViewActive)
+				{
+					window.setView(playerView);
 				}
 				else
 				{
-					BSPGrid = gen->GenerateBSP(depthInt, SizeInt, minHorInt, maxHorInt, minVerInt, maxVerInt);
-
-					if (!bspMap.load("D:/Github/HonoursPDG/TilesetTest.png", sf::Vector2u(32, 32), BSPGrid, SizeInt, SizeInt))
-					{
-						cout << "Failed to load tileset" << endl;
-					}
+					window.setView(mainView);
 				}
 			}
+
 			window.clear();
 
+			
 
 			if (drunkardwalkActive)
 			{
@@ -428,6 +1360,26 @@ int main(int argc, char** argv)
 			else if (bspActive)
 			{
 				window.draw(bspMap);
+			}
+			else if (agentActive)
+			{
+				window.draw(agentMap);
+			}
+			else if (bounceActive)
+			{
+				window.draw(bounceMap);
+			}
+			else if (loadActive)
+			{
+				window.draw(inputMap);
+			}
+
+			window.draw(SmoothText);
+			window.draw(MipmapText);
+
+			if (playerActive)
+			{
+				window.draw(pl->GetSprite());
 			}
 
 			ImGui::End();

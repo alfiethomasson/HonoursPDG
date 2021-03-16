@@ -8,8 +8,11 @@ add_subdirectory("lib/sfml")
 set(SFML "lib/sfml/include")
 link_directories("${CMAKE_BINARY_DIR}/lib/sfml/lib")
 
+file(GLOB_RECURSE res res/*.jpg res/*.png res/*.ttf)
+file(COPY res DESTINATION ${CMAKE_BINARY_DIR})
+
 # add the executable
-file(GLOB_RECURSE SOURCES App/*.cpp App/*.h)
+file(GLOB_RECURSE SOURCES App/*.cpp App/*.h App/*.hpp)
 add_executable(DungeonGenerator ${SOURCES})
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})

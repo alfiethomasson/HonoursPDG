@@ -7,6 +7,7 @@ public:
 
 	bool load(const std::string& tileset, sf::Vector2u tileSize, std::vector<std::vector<int>> tiles, unsigned int width, unsigned int height)
 	{
+
 		// load the tileset texture
 		if (!m_tileset.loadFromFile(tileset))
 			return false;
@@ -45,6 +46,20 @@ public:
 		return true;
 	}
 
+	void EnableSmooth(bool val)
+	{
+		m_tileset.setSmooth(val);
+	}
+
+	void EnableMipMap(bool val)
+	{
+		mipmapenabled = val;
+		if (mipmapenabled)
+		{
+			m_tileset.generateMipmap();
+		}
+	}
+
 private:
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -61,4 +76,5 @@ private:
 
 	sf::VertexArray m_vertices;
 	sf::Texture m_tileset;
+	bool mipmapenabled = false;
 };
