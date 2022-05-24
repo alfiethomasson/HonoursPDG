@@ -107,8 +107,6 @@ void Player::Load(int xPos, int yPos, bool random, std::vector<std::vector<int>>
 					int distance = sqrt(pow(0 - i, 2) +
 						pow(0 - r, 2) * 1.0);
 
-				//	std::cout << "calc distance = " << distance << std::endl; 
-					//	std::cout << "dis = " << dis << std::endl;
 
 					if (distance < dis)
 					{
@@ -116,15 +114,6 @@ void Player::Load(int xPos, int yPos, bool random, std::vector<std::vector<int>>
 						tileYNum = r;
 						dis = distance;
 					}
-
-					/*if (tileXNum > i)
-					{
-						if (tileYNum > r)
-						{
-							tileXNum = i;
-							tileYNum = r;
-						}
-					}*/
 				}
 			}
 		}

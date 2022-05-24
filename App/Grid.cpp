@@ -24,10 +24,7 @@ int* Grid::GetRandomPoint()
 	std::uniform_int_distribution<> w(0, Width), h(0, Height);
 	int randPoint[2];
 	randPoint[0] = w(gen);
-	//std::cout << "Rand point 0 = " << randPoint[0] << std::endl;
 	randPoint[1] = h(gen);
-//	std::cout << "Rand point 1 = " << randPoint[1] << std::endl;
-//	std::cout << "Calculated random point as: " << randPoint[0] << ", " << randPoint[1] << std::endl;
 	return randPoint;
 }
 
@@ -49,9 +46,7 @@ void Grid::Print()
 		{
 			//std::cout << mapVector[i][y];
 		}
-		//std::cout << std::endl;	
 	}
-	//std::cout << std::endl;
 }
 
 bool Grid::GetPoint(int x, int y)
@@ -61,11 +56,11 @@ bool Grid::GetPoint(int x, int y)
 
 void Grid::InitRandom(float cutoff)
 {
-	srand(time(NULL));
+	srand(1000);
 
-	for (int x = 0; x < Width; x++)
+	for (int x = 0; x < Width + 1; x++)
 	{
-		for (int y = 0; y < Height; y++)
+		for (int y = 0; y < Height + 1; y++)
 		{
 			if (((double)rand() / RAND_MAX) < cutoff)
 			{
